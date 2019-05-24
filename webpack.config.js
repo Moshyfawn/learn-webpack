@@ -1,6 +1,8 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+require("dotenv").config();
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/app.js",
@@ -10,7 +12,16 @@ module.exports = {
   },
   devServer: {
     contentBase: "./dist",
-    open: true
+    open: true,
+    stats: "errors-only",
+    // TODO use error-overlay-webpack-plugin instead
+    overlay: true,
+    host: process.env.HOST,
+    port: process.env.PORT,
+    watchOptions: {
+      aggregateTimeout: 300,
+      poll: 1000
+    }
   },
   module: {
     rules: [
@@ -42,6 +53,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "Webpack Output"
     }),
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new webpack.WatchIgnorePlugin([path.join(__dirname, "node_modules")])
   ]
 };
